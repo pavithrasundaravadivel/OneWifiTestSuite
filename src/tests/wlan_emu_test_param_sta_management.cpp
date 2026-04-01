@@ -986,6 +986,7 @@ int test_step_param_sta_management::step_frame_filter(wlan_emu_msg_t *msg)
     wlan_emu_msg_data_t *f_data = NULL;
     char client_macaddr[32] = { 0 };
     char macaddr[32] = { 0 };
+    char step_mac[32] = {0};
     wlan_emu_print(wlan_emu_log_level_dbg, "%s:%d: step number : %d\n", __func__, __LINE__,
         step->step_number);
 
@@ -1003,6 +1004,7 @@ int test_step_param_sta_management::step_frame_filter(wlan_emu_msg_t *msg)
 
         uint8_mac_to_string_mac(f_data->u.frm80211.u.frame.client_macaddr, client_macaddr);
         uint8_mac_to_string_mac(f_data->u.frm80211.u.frame.macaddr, macaddr);
+	uint8_mac_to_string_mac(step->u.sta_test->sta_vap_config->u.sta_info.mac, step_mac);
 
         if ((memcmp(step->u.sta_test->sta_vap_config->u.sta_info.mac,
                  f_data->u.frm80211.u.frame.client_macaddr, sizeof(mac_addr_t)) == 0) ||
@@ -1010,8 +1012,8 @@ int test_step_param_sta_management::step_frame_filter(wlan_emu_msg_t *msg)
                  f_data->u.frm80211.u.frame.macaddr, sizeof(mac_addr_t)) == 0)) {
             if (msg->get_msgname_from_msgtype() != RETURN_OK) {
                 wlan_emu_print(wlan_emu_log_level_err,
-                    "%s:%d: invalid msgname received from macaddr : %s client_macaddr : %s\n",
-                    __func__, __LINE__, macaddr, client_macaddr);
+                    "%s:%d: invalid msgname received from macaddr : %s client_macaddr : %s step_mac : %s\n",
+                    __func__, __LINE__, macaddr, client_macaddr, step_mac);
                 return RETURN_UNHANDLED;
             }
 

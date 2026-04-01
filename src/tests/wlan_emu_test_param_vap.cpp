@@ -184,6 +184,7 @@ int test_step_param_vap::step_frame_filter(wlan_emu_msg_t *msg)
     int i = 0;
     wlan_emu_msg_data_t *f_data = NULL;
     mac_addr_str_t mac_str;
+    mac_addr_str_t bssid;
 
     wlan_emu_print(wlan_emu_log_level_dbg, "%s:%d: step number : %d\n", __func__, __LINE__,
         step->step_number);
@@ -223,6 +224,11 @@ int test_step_param_vap::step_frame_filter(wlan_emu_msg_t *msg)
             }
 
             vap_info = step->m_ui_mgr->get_cci_vap_info(vap_names[i]);
+            if (vap_info == NULL ) {
+                wlan_emu_print(wlan_emu_log_level_err, "%s:%d: vap_info is NULL\n", __func__, __LINE__);
+                return RETURN_UNHANDLED;
+	    }
+	    mac_str_without_colon(vap_info->u.bss_info.bssid, bssid);
             if (memcmp(vap_info->u.bss_info.bssid, f_data->u.cfg80211.u.start_ap.macaddr,
                     sizeof(mac_addr_t)) == 0) {
                 wlan_emu_print(wlan_emu_log_level_dbg,
@@ -232,8 +238,8 @@ int test_step_param_vap::step_frame_filter(wlan_emu_msg_t *msg)
                 return RETURN_HANDLED;
             } else {
                 wlan_emu_print(wlan_emu_log_level_dbg,
-                    "%s:%d: Not matching with mac address %s found for %s for step : %d\n",
-                    __func__, __LINE__, mac_str, vap_names[i], step->step_number);
+                    "%s:%d: Not matching with mac address %s with bssid %s found for %s for step : %d\n",
+                    __func__, __LINE__, mac_str, bssid, vap_names[i], step->step_number);
             }
         }
 
