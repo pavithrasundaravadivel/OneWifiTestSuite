@@ -469,31 +469,37 @@ int wlan_emu_msg_t::get_msgname_from_msgtype()
             // 8 = sizeof logical link control header
             // 1 = 802.1x auth version
             // 4 = TLV for 802.1x
+            wlan_emu_print(wlan_emu_log_level_err, "Entering eapol\n");
             tmp_frame_buf = frame_buf + frame_hdr_len + 8 + 1 + 4;
 
             memcpy(tmp_key_info, tmp_frame_buf, sizeof(key_info));
             key_info = WPA_GET_BE16(tmp_key_info);
 
             if (key_info & WPA_KEY_INFO_KEY_TYPE) {
+                wlan_emu_print(wlan_emu_log_level_err, "Entering key_info\n");
                 if ((key_info &
                         (WPA_KEY_INFO_KEY_TYPE | WPA_KEY_INFO_INSTALL | WPA_KEY_INFO_ACK |
                             WPA_KEY_INFO_MIC | WPA_KEY_INFO_SECURE)) ==
                     (WPA_KEY_INFO_KEY_TYPE | WPA_KEY_INFO_INSTALL | WPA_KEY_INFO_ACK |
                         WPA_KEY_INFO_MIC | WPA_KEY_INFO_SECURE)) {
+                    wlan_emu_print(wlan_emu_log_level_err, "Found eapol3\n");
                     strncpy(msg_name, "eapol-msg3", sizeof(msg_name));
                 } else if ((key_info &
                                (WPA_KEY_INFO_KEY_TYPE | WPA_KEY_INFO_MIC | WPA_KEY_INFO_SECURE)) ==
                     (WPA_KEY_INFO_KEY_TYPE | WPA_KEY_INFO_MIC | WPA_KEY_INFO_SECURE)) {
+                    wlan_emu_print(wlan_emu_log_level_err, "Found eapol4\n");
                     strncpy(msg_name, "eapol-msg4", sizeof(msg_name));
                 } else if ((key_info & (WPA_KEY_INFO_KEY_TYPE | WPA_KEY_INFO_MIC)) ==
                     (WPA_KEY_INFO_KEY_TYPE | WPA_KEY_INFO_MIC)) {
+                    wlan_emu_print(wlan_emu_log_level_err, "Found eapol2\n");
                     strncpy(msg_name, "eapol-msg2", sizeof(msg_name));
                 } else if ((key_info & (WPA_KEY_INFO_ACK | WPA_KEY_INFO_KEY_TYPE)) ==
                     (WPA_KEY_INFO_KEY_TYPE | WPA_KEY_INFO_ACK)) {
+                    wlan_emu_print(wlan_emu_log_level_err, "Found eapol1\n");
                     strncpy(msg_name, "eapol-msg1", sizeof(msg_name));
                 }
             }
-
+            wlan_emu_print(wlan_emu_log_level_err, "Breaking from eapol\n");
             break;
         case wlan_emu_frm80211_ops_type_reassoc_req:
             strncpy(msg_name, "reassoc-request", sizeof(msg_name));
